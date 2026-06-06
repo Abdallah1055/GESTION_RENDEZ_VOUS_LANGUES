@@ -70,8 +70,10 @@ class ReservationController extends Controller
     {
         $secret = config('services.stripe.secret');
 
-        if (! $secret) {
-            return str_starts_with($paymentIntentId, 'pi_') || str_starts_with($paymentIntentId, 'test_')
+        if (! $secret || $secret === 'sk_test_your_key_here') {
+            return str_starts_with($paymentIntentId, 'pi_')
+                || str_starts_with($paymentIntentId, 'test_')
+                || str_starts_with($paymentIntentId, 'mock_pi_')
                 ? ['ok' => true, 'message' => 'Paiement local accepte.']
                 : ['ok' => false, 'message' => 'Configuration Stripe manquante.'];
         }
