@@ -72,7 +72,7 @@ export default function ClientDashboard() {
       {tab === 'browse' && (
         <section>
           <form className="search-row compact" onSubmit={(event) => { event.preventDefault(); loadFormateurs(); }}>
-            <label className="input-with-icon"><Search size={18} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" /></label>
+            <label className="input-with-icon"><Search size={18} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by formateur or language..." /></label>
             <button className="btn btn-primary" type="submit">Search</button>
           </form>
           <div className="grid-list">

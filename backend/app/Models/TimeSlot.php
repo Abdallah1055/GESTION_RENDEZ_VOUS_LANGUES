@@ -28,4 +28,14 @@ class TimeSlot extends Model
     {
         return $this->hasOne(Reservation::class);
     }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
+    public function activeReservation()
+    {
+        return $this->hasOne(Reservation::class)->where('statut', 'confirmee');
+    }
 }

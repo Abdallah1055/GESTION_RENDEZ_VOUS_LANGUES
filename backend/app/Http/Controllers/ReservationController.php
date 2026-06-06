@@ -26,7 +26,12 @@ class ReservationController extends Controller
         $reservation = DB::transaction(function () use ($request, $data) {
             $slot = TimeSlot::whereKey($data['time_slot_id'])->lockForUpdate()->firstOrFail();
 
-            if ($slot->est_reserve) {
+            $hasActiveReservation = Reservation::where('time_slot_id', $slot->id)
+                ->where('statut', 'confirmee')
+                ->lockForUpdate()
+                ->exists();
+
+            if ($hasActiveReservation) {
                 abort(422, 'Ce creneau est deja reserve.');
             }
 
@@ -52,10 +57,24 @@ class ReservationController extends Controller
             return response()->json(['message' => 'Reservation non autorisee.'], 403);
         }
 
-        $reservation->update(['statut' => 'annulee']);
-        $reservation->timeSlot()->update(['est_reserve' => false]);
+        $reservation = DB::transaction(function () use ($reservation) {
+            $reservation = Reservation::whereKey($reservation->id)->lockForUpdate()->firstOrFail();
+            $slot = TimeSlot::whereKey($reservation->time_slot_id)->lockForUpdate()->firstOrFail();
 
-        return response()->json($reservation->fresh()->load('timeSlot.formateur.languages'));
+            if ($reservation->statut !== 'annulee') {
+                $reservation->update(['statut' => 'annulee']);
+            }
+
+            $hasActiveReservation = Reservation::where('time_slot_id', $slot->id)
+                ->where('statut', 'confirmee')
+                ->exists();
+
+            $slot->update(['est_reserve' => $hasActiveReservation]);
+
+            return $reservation->fresh()->load('timeSlot.formateur.languages');
+        });
+
+        return response()->json($reservation);
     }
 
     public function myReservations(Request $request)

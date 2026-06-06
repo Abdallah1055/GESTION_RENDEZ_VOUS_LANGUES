@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('client_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('time_slot_id')->unique()->constrained('time_slots')->cascadeOnDelete();
+            $table->foreignId('time_slot_id')->constrained('time_slots')->cascadeOnDelete();
             $table->string('statut')->default('confirmee');
             $table->string('payment_intent_id')->nullable();
             $table->unsignedInteger('montant')->default(2000);
