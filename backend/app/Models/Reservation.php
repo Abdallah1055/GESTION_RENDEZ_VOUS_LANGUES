@@ -12,6 +12,7 @@ class Reservation extends Model
         'statut',
         'payment_intent_id',
         'montant',
+        'meeting_url',
     ];
 
     protected $casts = [

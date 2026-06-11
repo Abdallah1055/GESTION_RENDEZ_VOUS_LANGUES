@@ -23,8 +23,13 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
         'is_verified',
         'bio',
+        'verified_at',
+        'admin_comment',
+        'hourly_rate',
+        'certifications',
     ];
 
     /**
@@ -48,6 +53,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_verified' => 'boolean',
+            'verified_at' => 'datetime',
+            'certifications' => 'array',
         ];
     }
 
@@ -56,6 +63,11 @@ class User extends Authenticatable
     public function languages()
     {
         return $this->belongsToMany(Language::class, 'formateur_language', 'formateur_id', 'language_id');
+    }
+
+    public function formateurProfile()
+    {
+        return $this->hasOne(FormateurProfile::class);
     }
 
     public function timeSlots()

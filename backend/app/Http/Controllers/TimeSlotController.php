@@ -14,6 +14,7 @@ class TimeSlotController extends Controller
             ->whereDate('date', '>=', now()->toDateString())
             ->orderBy('date')
             ->orderBy('heure_debut')
+            ->with('formateur')
             ->get();
     }
 

@@ -20,8 +20,8 @@ export default function ClientDashboard() {
   const grouped = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
     return {
-      upcoming: reservations.filter((item) => item.statut === 'confirmee' && item.time_slot?.date >= today),
-      past: reservations.filter((item) => item.statut === 'confirmee' && item.time_slot?.date < today),
+      upcoming: reservations.filter((item) => item.statut === 'confirmee' && item.slot?.date >= today),
+      past: reservations.filter((item) => item.statut === 'confirmee' && item.slot?.date < today),
       cancelled: reservations.filter((item) => item.statut === 'annulee'),
     };
   }, [reservations]);
@@ -50,17 +50,31 @@ export default function ClientDashboard() {
             <div className="booking-group" key={group}>
               <h2>{group}</h2>
               {grouped[group].map((reservation) => (
-                <article className="booking-row" key={reservation.id}>
+                <article className="slot-card" key={reservation.reservation_id}>
                   <div>
-                    <strong>{reservation.time_slot?.formateur?.name}</strong>
-                    <span>{reservation.time_slot?.date} at {reservation.time_slot?.heure_debut?.slice(0, 5)}</span>
+                    <strong>{reservation.formateur?.name}</strong>
+                    <span>Date: {reservation.slot?.date.split('T')[0]}</span>
+                    <span>Time: {reservation.slot?.start_time?.slice(0, 5)} - {reservation.slot?.end_time?.slice(0, 5)}</span>
+                    <span>Hourly Rate: {reservation.formateur?.hourly_rate} $</span>
+                    {reservation.meeting_url ? (
+                      <span>
+                        <strong>Meeting:</strong>
+                        <a href={reservation.meeting_url} target="_blank" rel="noopener noreferrer" style={{ color: '#0f6f48', wordBreak: 'break-all' }}>
+                          {reservation.meeting_url}
+                        </a>
+                      </span>
+                    ) : (
+                      <span className="muted">Meeting link not available yet</span>
+                    )}
                   </div>
-                  <span className="chip">{reservation.statut}</span>
-                  {group === 'upcoming' && (
-                    <button className="icon-text danger" type="button" onClick={() => cancel(reservation.id)}>
-                      <CalendarX size={17} />Cancel
-                    </button>
-                  )}
+                  <div>
+                    <span className="chip">{reservation.statut}</span>
+                    {group === 'upcoming' && (
+                      <button className="icon-text danger" type="button" onClick={() => cancel(reservation.reservation_id)}>
+                        <CalendarX size={17} />Cancel
+                      </button>
+                    )}
+                  </div>
                 </article>
               ))}
               {!grouped[group].length && <p className="muted">No {group} bookings.</p>}

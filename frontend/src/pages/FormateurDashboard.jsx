@@ -1,10 +1,13 @@
-import { Plus, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Eye, Plus, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
 export default function FormateurDashboard() {
   const { user, setUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [slots, setSlots] = useState([]);
   const [students, setStudents] = useState([]);
   const [languages, setLanguages] = useState([]);
@@ -13,7 +16,7 @@ export default function FormateurDashboard() {
   const [languageId, setLanguageId] = useState('');
   const [message, setMessage] = useState('');
 
-  const load = async () => {
+  const load = useCallback(async () => {
     const [slotData, studentData, languageData, me] = await Promise.all([
       api.get(`/time-slots/${user.id}`),
       api.get('/my-students'),
@@ -25,13 +28,13 @@ export default function FormateurDashboard() {
     setLanguages(languageData.data);
     setUser(me.data);
     setProfile({ name: me.data.name, bio: me.data.bio || '' });
-  };
+  }, [user.id, setUser]);
 
   useEffect(() => {
     if (user?.is_verified) {
       load();
     }
-  }, []);
+  }, [user, location, load]);
 
   if (!user?.is_verified) {
     return (
@@ -90,12 +93,42 @@ export default function FormateurDashboard() {
         </div>
       </section>
 
-      <section className="panel">
-        <h2>Students</h2>
-        {students.map((student) => <article className="booking-row" key={student.id}><strong>{student.name}</strong><span>{student.email}</span></article>)}
-        {!students.length && <p className="muted">No students yet.</p>}
-      </section>
 
+      
+      <section className="panel">
+      <h2>Clients</h2>
+
+      {students.map((student) => (
+        <article className="booking-row" key={student.id}>
+          <div>
+            <strong>{student.name}</strong>
+            <span>{student.email}</span>
+          </div>
+
+          <button
+            className="icon-text"
+            type="button"
+            onClick={() => {
+              const reservationId =
+                student.reservations?.[0]?.id;
+
+              if (reservationId) {
+                navigate(`/formateur/student-details/${reservationId}`);
+              }
+            }}
+          >
+            <Eye size={17} />
+            View Details
+          </button>
+        </article>
+      ))}
+
+      {!students.length && (
+        <p className="muted">No students yet.</p>
+      )}
+      </section>
+      
+      {/* Languages section */}
       <section className="panel">
         <h2>Languages</h2>
         <div className="search-row compact">
@@ -114,6 +147,8 @@ export default function FormateurDashboard() {
         </div>
       </section>
 
+
+      {/* Edit profile section */}
       <section className="panel">
         <h2>Edit profile</h2>
         <form className="auth-form" onSubmit={updateProfile}>

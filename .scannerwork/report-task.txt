@@ -1,0 +1,6 @@
+projectKey=PreplyClone
+serverUrl=http://localhost:9000
+serverVersion=26.6.0.123539
+dashboardUrl=http://localhost:9000/dashboard?id=PreplyClone
+ceTaskId=dc286966-0434-4d3f-b027-d117b8fe70d0
+ceTaskUrl=http://localhost:9000/api/ce/task?id=dc286966-0434-4d3f-b027-d117b8fe70d0

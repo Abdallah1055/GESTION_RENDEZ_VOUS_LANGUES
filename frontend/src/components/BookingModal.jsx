@@ -8,7 +8,18 @@ const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
   : null;
 
-function ModalShell({ children, error, onClose, onConfirm, processing, intent }) {
+function calculateTotalPrice(slot) {
+  if (!slot || !slot.formateur?.hourly_rate) {
+    return 0;
+  }
+  const startTime = new Date(`1970-01-01T${slot.heure_debut}`);
+  const endTime = new Date(`1970-01-01T${slot.heure_fin}`);
+  const duration = (endTime - startTime) / (1000 * 60 * 60); // Convert to hours
+  return slot.formateur.hourly_rate * duration;
+}
+
+function ModalShell({ children, error, onClose, onConfirm, processing, intent, amount }) {
+
   return (
     <div className="modal-backdrop">
       <section className="modal">
@@ -16,7 +27,7 @@ function ModalShell({ children, error, onClose, onConfirm, processing, intent })
           <X size={18} />
         </button>
         <h2>Confirm lesson</h2>
-        <p className="muted">Amount: 20 EUR</p>
+        <p className="muted">Amount: {amount.toFixed(2)} $</p>
         {children}
         {error && <p className="error">{error}</p>}
         <div className="modal-actions">
@@ -32,6 +43,7 @@ function ModalShell({ children, error, onClose, onConfirm, processing, intent })
 
 function MockBookingForm({ slot, onClose, onBooked, intent, error, setError }) {
   const [processing, setProcessing] = useState(false);
+  const amount = useMemo(() => calculateTotalPrice(slot), [slot]);
 
   const confirmBooking = async () => {
     setError('');
@@ -53,7 +65,7 @@ function MockBookingForm({ slot, onClose, onBooked, intent, error, setError }) {
   };
 
   return (
-    <ModalShell error={error} intent={intent} onClose={onClose} onConfirm={confirmBooking} processing={processing}>
+    <ModalShell error={error} intent={intent} onClose={onClose} onConfirm={confirmBooking} processing={processing} amount={amount}>
       <p className="notice">Mock payment mode is active. No real card will be charged.</p>
     </ModalShell>
   );
@@ -63,6 +75,7 @@ function StripeBookingForm({ slot, onClose, onBooked, intent, error, setError })
   const stripe = useStripe();
   const elements = useElements();
   const [processing, setProcessing] = useState(false);
+  const amount = useMemo(() => calculateTotalPrice(slot), [slot]);
 
   const confirmBooking = async () => {
     setError('');
@@ -100,7 +113,7 @@ function StripeBookingForm({ slot, onClose, onBooked, intent, error, setError })
   };
 
   return (
-    <ModalShell error={error} intent={intent} onClose={onClose} onConfirm={confirmBooking} processing={processing}>
+    <ModalShell error={error} intent={intent} onClose={onClose} onConfirm={confirmBooking} processing={processing} amount={amount}>
       <div className="stripe-box">
         <CardElement options={{ hidePostalCode: true }} />
       </div>

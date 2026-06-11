@@ -458,3 +458,69 @@ h3 {
     grid-auto-flow: row;
   }
 }
+
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px;
+  border: 1px solid #d6ddd7;
+  border-radius: 6px;
+  background: #fff;
+  transition: all 0.2s;
+}
+
+.checkbox-label:hover {
+  border-color: #0f6f48;
+  background: #f4f7f5;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.user-profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 12px;
+}
+
+.user-profile .avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.user-info {
+  display: grid;
+  gap: 2px;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #17211d;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: #66736c;
+  font-weight: 500;
+}
+
+@media (max-width: 760px) {
+  .user-info {
+    display: none;
+  }
+}

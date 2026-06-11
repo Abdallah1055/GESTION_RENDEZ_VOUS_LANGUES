@@ -80,9 +80,26 @@ class ReservationController extends Controller
     public function myReservations(Request $request)
     {
         return Reservation::where('client_id', $request->user()->id)
-            ->with('timeSlot.formateur.languages')
+            ->with(['timeSlot.formateur.languages', 'timeSlot.formateur'])
             ->latest()
-            ->get();
+            ->get()
+            ->map(function ($reservation) {
+                return [
+                    'reservation_id' => $reservation->id,
+                    'meeting_url' => $reservation->meeting_url,
+                    'slot' => [
+                        'date' => $reservation->timeSlot->date,
+                        'start_time' => $reservation->timeSlot->heure_debut,
+                        'end_time' => $reservation->timeSlot->heure_fin,
+                    ],
+                    'formateur' => [
+                        'name' => $reservation->timeSlot->formateur->name,
+                        'hourly_rate' => $reservation->timeSlot->formateur->hourly_rate ?? 0,
+                    ],
+                    'languages' => $reservation->timeSlot->formateur->languages,
+                    'statut' => $reservation->statut,
+                ];
+            });
     }
 
     private function verifyPaymentIntent(string $paymentIntentId): array

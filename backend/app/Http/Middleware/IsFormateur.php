@@ -14,7 +14,7 @@ class IsFormateur
             return response()->json(['message' => 'Acces formateur requis.'], 403);
         }
 
-        if (! $request->user()->is_verified) {
+        if ($request->user()->status !== 'accepted') {
             return response()->json(['message' => 'Votre compte formateur est en attente de verification.'], 403);
         }
 

@@ -18,6 +18,15 @@ export default function Navbar() {
     navigate('/');
   };
 
+  const formatRole = (role) => {
+    const roleMap = {
+      admin: 'Admin',
+      formateur: 'Formateur',
+      client: 'Client',
+    };
+    return roleMap[role] || 'Unknown Role';
+  };
+
   return (
     <header className="navbar">
       <Link className="brand" to="/">
@@ -44,10 +53,19 @@ export default function Navbar() {
             <Link className="btn btn-primary" to="/register">Register</Link>
           </>
         ) : (
-          <button className="icon-text" type="button" onClick={handleLogout}>
-            <LogOut size={18} />
-            Logout
-          </button>
+          <>
+            <div className="user-profile">
+              <div className="avatar">{user.name.charAt(0).toUpperCase()}</div>
+              <div className="user-info">
+                <div className="user-name">{user.name}</div>
+                <div className="user-role">{formatRole(user.role)}</div>
+              </div>
+            </div>
+            <button className="icon-text" type="button" onClick={handleLogout}>
+              <LogOut size={18} />
+              Logout
+            </button>
+          </>
         )}
       </div>
     </header>

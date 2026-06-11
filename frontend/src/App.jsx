@@ -8,6 +8,7 @@ import FormateurDetail from './pages/FormateurDetail';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import StudentDetails from './pages/StudentDetails';
 
 export default function App() {
   return (
@@ -25,6 +26,10 @@ export default function App() {
         <Route
           path="/formateur-dashboard"
           element={<PrivateRoute roles={['formateur']}><FormateurDashboard /></PrivateRoute>}
+        />
+        <Route
+          path="/formateur/student-details/:id"
+          element={<PrivateRoute roles={['formateur']}><StudentDetails /></PrivateRoute>}
         />
         <Route
           path="/admin-dashboard"
